@@ -2,7 +2,10 @@ package com.algaworks.socialbooks.resources;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 
+import com.algaworks.socialbooks.services.LivrosService;
+import com.algaworks.socialbooks.services.exceptions.LivroNaoEncontradoException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
@@ -18,17 +21,17 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 public class LivrosResources {
 
 	@Autowired
-	private LivrosRepository livrosRepository;
+	private LivrosService livrosService;
 
 	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity<List<Livro>> listar() {
-		return ResponseEntity.status(HttpStatus.OK).body(livrosRepository.findAll());
+		return ResponseEntity.status(HttpStatus.OK).body(livrosService.listar());
     }
 
 	@RequestMapping(method = RequestMethod.POST)
 	//RequestBody para poder fazer o parse e colocar as informações desse do objeto livro
 	public ResponseEntity<?> salvar(@RequestBody Livro livro){
-		livro = livrosRepository.save(livro);
+		livro = livrosService.salvar(livro);
 
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
 				.path("/{id}").buildAndExpand(livro.getId()).toUri();
@@ -38,19 +41,20 @@ public class LivrosResources {
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	public ResponseEntity<?> buscar(@PathVariable("id") Long id){
-		Livro livro = livrosRepository.findById(id).orElse(null);
-		if(livro == null){
+		Optional<Livro> livro = null;
+		try {
+			livro = livrosService.buscar(id);
+		} catch (LivroNaoEncontradoException e) {
 			return ResponseEntity.notFound().build();
 		}
 		return ResponseEntity.status(HttpStatus.OK).body(livro);
-		//return this.livrosRepository.findById(id).orElse(null);
 	}
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
 	public ResponseEntity<Void> deletar(@PathVariable ("id") Long id){
 		try{
-			livrosRepository.deleteById(id);
-		}catch (EmptyResultDataAccessException e) {
+			livrosService.deletar(id);
+		}catch (LivroNaoEncontradoException e) {
 			return ResponseEntity.notFound().build();
 		}
 		return ResponseEntity.noContent().build();
@@ -59,7 +63,11 @@ public class LivrosResources {
 	@PutMapping(value ="/{id}")
 	public ResponseEntity<Void> atualizar(@RequestBody Livro livro, @PathVariable("id") Long id) {
 		livro.setId(id);
-		livrosRepository.save(livro);
+		try {
+			livrosService.atualizar(livro);
+		}catch (LivroNaoEncontradoException e){
+			return ResponseEntity.notFound().build();
+		}
         return ResponseEntity.noContent().build();
     }
 
