@@ -19,7 +19,6 @@ public class LivrosService {
 
     public List<Livro> listar(){
         return livrosRepository.findAll();
-        //return ResponseEntity.status(HttpStatus.OK).body(livrosRepository.findAll());
     }
 
     public Optional<Livro> buscar(Long id) {
