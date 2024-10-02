@@ -5,6 +5,7 @@ import com.algaworks.socialbooks.repository.AutoresRepository;
 import com.algaworks.socialbooks.services.exceptions.AutorExistenteException;
 import com.algaworks.socialbooks.services.exceptions.AutorNaoEncontradoException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -38,6 +39,6 @@ public class AutoresService {
             throw new AutorNaoEncontradoException("Autor não encontrado");
         }
         return autor;
-
     }
+
 }

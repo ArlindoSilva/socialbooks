@@ -5,6 +5,7 @@ import com.algaworks.socialbooks.services.exceptions.AutorExistenteException;
 import com.algaworks.socialbooks.services.exceptions.AutorNaoEncontradoException;
 import com.algaworks.socialbooks.services.exceptions.LivroNaoEncontradoException;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -51,4 +52,20 @@ public class ResourceExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
+
+    //Quando tentar salvar um livro informando um autor inexistente
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<DetalhesErro> handleDataIntegrityViolationException
+            (DataIntegrityViolationException e, HttpServletRequest request){
+
+        DetalhesErro error = new DetalhesErro();
+        error.setStatus(400l);
+        error.setTitulo("O autor não existe");
+        error.setMensagemDesenvolvedor("http://erros.socialbooks.com/400");
+        error.setTimestamp(System.currentTimeMillis());
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
 }
+
