@@ -3,6 +3,9 @@ package com.algaworks.socialbooks.domain;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import java.util.Date;
 import java.util.List;
@@ -14,17 +17,22 @@ public class Livro {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	
+
+	@NotEmpty(message = "O atributo nome é de preenchimento obrigatório.")
 	private String nome;
 
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	@JsonFormat(pattern = "dd/MM/yyyy")
+	@NotNull(message = "O atributo data de publicação é de preenchimento obrigatório.")
 	private Date publicacao;
 
 	@JsonInclude(JsonInclude.Include.NON_NULL)
+	@NotNull(message = "O atributo editora é de preenchimento obrigatório.")
 	private String editora;
 
 	@JsonInclude(JsonInclude.Include.NON_NULL)
+	@NotEmpty(message = "O atributo resumo deve ser preenchido.")
+	@Size(max = 1000, message = "O resumo não pode conter mais de 1000 caracteres")
 	private String resumo;
 
 	@JsonInclude(JsonInclude.Include.NON_EMPTY)

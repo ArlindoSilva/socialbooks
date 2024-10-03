@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import com.algaworks.socialbooks.domain.Comentario;
 import com.algaworks.socialbooks.services.LivrosService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +29,7 @@ public class LivrosResources {
 
 	@RequestMapping(method = RequestMethod.POST)
 	//RequestBody para poder fazer o parse e colocar as informações desse do objeto livro
-	public ResponseEntity<?> salvar(@RequestBody Livro livro){
+	public ResponseEntity<?> salvar(@Valid @RequestBody Livro livro){
 		livro = livrosService.salvar(livro);
 
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
